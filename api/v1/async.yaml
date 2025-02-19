@@ -1,0 +1,160 @@
+asyncapi: 3.0.0
+info:
+  title: ESR Service
+  version: 1.0.0
+  description: Async API for the ESR Service.
+
+channels:
+  entitiesReportsState:
+    address: esr/v1/entities/{entity_id}/reports/state
+    parameters:
+      entity_id:
+        $ref: '#/components/parameters/entity_id'
+    messages:
+      StateReport:
+        $ref: '#/components/messages/StateReport'
+    tags:
+      - name: reports
+
+  entitiesReportsTelemetry:
+    address: esr/v1/entities/{entity_id}/reports/telemetry
+    parameters:
+      entity_id:
+        $ref: '#/components/parameters/entity_id'
+    messages:
+      TelemetryReport:
+        $ref: '#/components/messages/TelemetryReport'
+    tags:
+      - name: reports
+
+  entitiesCommandsUpdateState:
+    address: esr/v1/entities/{entity_id}/commands/update_state
+    parameters:
+      entity_id:
+        $ref: '#/components/parameters/entity_id'
+    messages:
+      CommandUpdateState:
+        $ref: '#/components/messages/CommandUpdateState'
+    tags:
+      - name: commands
+  
+  entitiesEventsStateUpdated:
+    address: esr/v1/entities/{entity_id}/events/state_updated
+    parameters:
+      entity_id:
+        $ref: '#/components/parameters/entity_id'
+    messages:
+      StateReport:
+        $ref: '#/components/messages/StateReport'
+    tags:
+      - name: events
+  
+  entitiesEventsTelemetryReported:
+    address: esr/v1/entities/{entity_id}/events/telemetry_reported
+    parameters:
+      entity_id:
+        $ref: '#/components/parameters/entity_id'
+    messages:
+      TelemetryReport:
+        $ref: '#/components/messages/TelemetryReport'
+    tags:
+      - name: events
+
+  commandsResult:
+    address: esr/v1/commands/{command_id}/result
+    parameters:
+      command_id:
+        $ref: '#/components/parameters/command_id'
+    messages:
+      CommandResult:
+        $ref: '#/components/messages/CommandResult'
+    tags:
+      - name: commands
+
+
+
+operations:
+  receiveEntitiesReportsState:
+    action: receive
+    channel:
+      $ref: '#/channels/entitiesReportsState'
+  
+  receiveEntitiesReportsTelemetry:
+    action: receive
+    channel:
+      $ref: '#/channels/entitiesReportsTelemetry'
+  
+  sendEntitiesCommandsUpdateState:
+    action: send
+    channel:
+      $ref: '#/channels/entitiesCommandsUpdateState'
+
+  sendEntitiesEventsStateUpdated:
+    action: send
+    channel:
+      $ref: '#/channels/entitiesEventsStateUpdated'
+  
+  sendEntitiesEventsTelemetryReported:
+    action: send
+    channel:
+      $ref: '#/channels/entitiesEventsTelemetryReported'
+
+  sendCommandsResult:
+    action: send
+    channel:
+      $ref: '#/channels/commandsResult'
+
+
+
+components:
+  parameters:
+    entity_id:
+      description: The ID of the entity.
+
+    command_id:
+      description: The ID of the command.
+
+  messages:
+    StateReport:
+      payload:
+        type: object
+        properties:
+          state:
+            type: object
+            description: Current state of the entity.
+          timestamp:
+            type: string
+            format: date-time
+            description: Timestamp of the state report.
+
+    TelemetryReport:
+      payload:
+        type: object
+        properties:
+          metrics:
+            type: object
+            description: Metrics values reported by the entity.
+          timestamp:
+            type: string
+            format: date-time
+            description: Timestamp of the telemetry report.
+
+    CommandUpdateState:
+      payload:
+        type: object
+        properties:
+          state:
+            type: object
+            description: Desired state properties to update.
+    
+    CommandResult:
+      payload:
+        type: object
+        properties:
+          status:
+            type: string
+            description: Status of the command
+            enum:
+              - "success"
+              - "failed"
+
